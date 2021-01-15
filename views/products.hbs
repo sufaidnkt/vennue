@@ -1,0 +1,65 @@
+<style>
+  .btn{text-transform:none}
+</style>
+
+<div class="row mb-5">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        Product details
+      </div>
+
+      {{#if message_status}}
+      {{#if message}}
+      <div class="alert alert-{{message_status}}" role="alert">
+        {{message}}
+      </div>
+      {{/if}}
+      {{/if}}
+      <div class="card-table">
+        <a href="/product/edit"> <button class="btn btn-success pull-right">
+            <span class="batch-icon batch-icon-plus"></span>
+          </button> </a>
+        <table class="table table-hover table-responsive align-middle">
+          <thead class="thead-default">
+            <tr>
+              <th>#</th>
+              <th>Product Name</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Edit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each apidata}}
+            <tr>
+              {{!-- <td>{{@index}}</td> --}}
+              <td>{{id}}</td>
+              <td>
+                <span class="btn btn-success">{{name}}</span>
+              </td>
+              <td>
+                  <button class="btn btn-primary">{{stock}}</button>
+              </td>
+              <td>
+                {{#if status}}
+                  <span class="badge badge-danger">Out of Stock</span>
+                {{else}}
+                  <span class="badge badge-success">Stocked</span>
+                {{/if}}
+              </td>
+              <td> 
+                <a href="/product/edit/{{id}}"><button class="btn btn-warning">
+                  <span class="batch-icon batch-icon-pencil"></span>
+                </button> </a>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
