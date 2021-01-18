@@ -111,6 +111,8 @@ module.exports.usersAvailbale = function (data, callback) {
 	console.log(query)
   helpModel.selectQuery("usersAvailbale", query).then(results => {
         console.log("-108--------------")
+
+
         console.log(results)
         callback(null, results);
   
@@ -121,7 +123,7 @@ module.exports.usersAvailbale = function (data, callback) {
 }
 
 module.exports.insertNewMeeting = function (data, callback) { 
-	var start_time = data.start_time;
+	var start_time = data.start_time;	
   var end_time = data.end_time;
   var uids = data.user_list
 
