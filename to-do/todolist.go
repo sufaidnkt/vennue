@@ -8,15 +8,15 @@ import (
 
 	"strconv"
 
+	"time"
+
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gookit/color"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
-	"time"
-	"fmt"
-
 )
 
 var db, _ = gorm.Open("mysql", "root:root@/todolist?charset=utf8&parseTime=True&loc=Local")
@@ -25,26 +25,22 @@ type TodoItemModel struct {
 	Id          int `gorm:"primary_key"`
 	Description string
 	Completed   bool
-	Title 			string
+	Title       string
 	StartTime   time.Time `gorm:"not null;"`
-	EndTime   time.Time `gorm:"not null;"`
+	EndTime     time.Time `gorm:"not null;"`
 }
 
 type TodousersModel struct {
-	Id          int `gorm:"primary_key"`
-	Uid  				int
-	MeetingId 	int
-	Status   		bool
-
-
-
+	Id        int `gorm:"primary_key"`
+	Uid       int
+	MeetingId int
+	Status    bool
 }
 
 const (
-    layoutISO = "2006-01-02 15:04:05"
-    layoutUS  = "January 2, 2006"
+	layoutISO = "2006-01-02 15:04:05"
+	layoutUS  = "January 2, 2006"
 )
-
 
 func Healthz(w http.ResponseWriter, r *http.Request) {
 	log.Info("API Health is OK")
@@ -88,21 +84,36 @@ func CreateItem(w http.ResponseWriter, r *http.Request) {
 	start_time := r.FormValue("start_time")
 	end_time := r.FormValue("start_time")
 
-	uids := r.FormValue("uids")
-	fmt.Printf("----------32145Start----------**")
-	
-	fmt.Printf(uids)
-	fmt.Printf("----------32145----------")
+	uids := r.Form["uids"]
+
+	for _, s := range uids {
+		PR(s)
+	}
 
 	start_t, _ := time.Parse(layoutISO, start_time)
 	end_t, _ := time.Parse(layoutISO, end_time)
 
-
 	log.WithFields(log.Fields{"description": description}).Info("Add new TodoItem. Saving to database.")
-	todo := &TodoItemModel{Description: description, Completed: false, Title:title, StartTime:start_t, EndTime:end_t}
+	todo := &TodoItemModel{Description: description, Completed: false, Title: title, StartTime: start_t, EndTime: end_t}
 	db.Create(&todo)
 	result := db.Last(&todo)
-	fmt.Printf("result----------", result)
+	// inserted_id := todo.Id
+
+	var users = []TodousersModel{ (Uid: 10)}
+
+	db.Create(&users)
+
+	// datas := []map[string]interface{}{
+	// 	{"Uid": 10, "MeetingId": 19},
+	// 	{"Uid": 20, "MeetingId": 29},
+	// }
+
+	// db.Model(&TodousersModel{}).Create(datas)
+
+	// for _, user := range meeting {
+	// 	user.ID // 1,2,3
+	// }
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result.Value)
 
@@ -178,4 +189,10 @@ func GetTodoItems(completed bool) interface{} {
 	var todos []TodoItemModel
 	TodoItems := db.Where("completed = ?", completed).Find(&todos).Value
 	return TodoItems
+}
+
+func PR(data ...interface{}) {
+	color.New(color.FgWhite, color.BgBlack).Println("===========================================")
+	color.Info.Println(data...)
+	color.New(color.FgWhite, color.BgBlack).Println("===========================================")
 }
